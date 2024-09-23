@@ -23,6 +23,7 @@
 </head>
 <body class="background-color">
     <h1>DATA BUKU</h1>
+    <a href="{{ route('books.create')}}" class="btn btn-primary float-end">Tambah Buku</a>
     <table class="table table-bordered border-black">
         <thead class="table-primary border-black">
             <tr>
@@ -31,18 +32,34 @@
                 <th>Penulis</th>
                 <th>Harga</th>
                 <th>Tanggal Terbit</th>
-                <th>Aksi</th>
+                <th>Hapus</th>
+                <th>Edit</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($books_data as $index =>$books)
+            @foreach ($books_data as $index => $books)
                 <tr>
                     <td>{{$books->id}}</td>
                     <td>{{$books->judul}}</td>
                     <td>{{$books->penulis}}</td>
                     <td>{{"Rp. ".number_format($books->harga, 2, '.', '.')}}</td>
                     <td>{{\Carbon\Carbon::parse($books->tgl_terbit)->format('d-m-Y')}}</td>
-                    <td></td>
+                    <td>
+                        <form action="{{ route('books.destroy', $books->id)}}" method="POST">
+
+                            @csrf
+                            @method('DELETE')
+                            <button onclick="return confirm('Yakin mau di hapus?')" type="submit" class="btn btn-danger">
+                                Hapus
+                            </button>
+
+                        </form>
+                    </td>
+                    <td>
+
+                        <a href="{{ route('books.edit', $books->id)}}" class="btn btn-primary float-end">Edit Buku</a>
+
+                    </td>
                 </tr>
             @endforeach
             <tr>
