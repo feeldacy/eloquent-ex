@@ -10,6 +10,7 @@ class Books extends Model
     use HasFactory;
 
     protected $table = 'books';
+    protected $dates = ['tgl_terbit'];
 }
 
 // table ap yg mau dipake (di inisiasiin)

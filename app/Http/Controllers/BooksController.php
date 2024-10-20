@@ -4,16 +4,21 @@ namespace App\Http\Controllers;
 use App\Models\Books;
 
 use Illuminate\Http\Request;
+use Illuminate\Pagination\Paginator;
 
 class BooksController extends Controller
 {
     public function index(){
+        // Paginator::useBootstrapFive();
+        // $books_data = Books::orderBy('id', 'desc')->paginate(10);
+
         $books_data = Books::all()->sortBy('id');
 
         $countBooks = $books_data->count();
 
         $totalPrice = $books_data->sum('harga');
-        return view('books.index', compact('books_data', 'countBooks', 'totalPrice'));
+
+        return view('books.indeks', compact('books_data', 'countBooks', 'totalPrice'));
     }
 
     public function create(){
@@ -21,21 +26,29 @@ class BooksController extends Controller
     }
 
     public function store(Request $request){
+        $this->validate($request, [
+            'judul' => 'required|string',
+            'penulis' => 'required|string',
+            'harga' => 'required|numeric',
+            'tgl_terbit' => 'required|date'
+        ]);
+
         $buku = new Books();
-        $buku->judul = $request->judul;
+        $buku->judul = $request->judul; // lihat name di view
         $buku->penulis = $request->penulis;
         $buku->harga = $request->harga;
         $buku->tgl_terbit = $request->tgl_terbit;
         $buku->save();
 
-        return redirect('/books');
+        return redirect('/books')
+        ->with('pesan', 'Data buku berhasil di Simpan');
     }
 
     public function destroy($id){
         $buku = Books::find($id);
         $buku ->delete();
 
-        return redirect('/books');
+        return redirect('/books')->with('pesan', 'Data buku berhasil di Hapus');
     }
 
     public function edit($id){
@@ -52,6 +65,20 @@ class BooksController extends Controller
 
         $buku->save();
 
-        return redirect('/books');
+        return redirect('/books')->with('pesan', 'Data buku berhasil di Update');
+    }
+
+
+    public function search(Request $request) {
+        $batas = 5;
+        $cari = $request->kata;
+        $books_data = Books::where('judul', 'like', "%" . $cari . "%")
+            ->orWhere('penulis', 'like', "%" . $cari . "%")
+            ->paginate($batas);
+
+        $jumlah_buku = $books_data->count();
+        $no = $batas * ($books_data->currentPage() - 1);
+
+        return view('books.search', compact('jumlah_buku', 'books_data', 'no', 'cari'));
     }
 }

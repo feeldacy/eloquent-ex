@@ -28,17 +28,23 @@
         <div class="alert alert-success">{{Session::get('pesan')}}</div>
     @endif
 
+    @if(count($books_data))
+        <div class="alert alert-success mt-5">
+            Ditemukan <strong>{{ count($books_data) }}</strong> data dengan kata: <strong>'{{ $cari }}'</strong>
+        </div>
+    @else
+        <div class="alert alert-warning" ><h4>Data dengan kata <strong>'{{ $cari }}'</strong> tidak ditemukan</h4>
+        </div>
+    @endif
+
     <h1>DATA BUKU</h1>
 
     <form action="{{ route('books.search') }}" method="get">
         @csrf
         <input type="text" name="kata" class="form-control" placeholder="Cari ..."
-            style="width: 30%; margin-top: 10px; margin-bottom: 10px;">
+            style="width: 30%; display: inline; margin-top: 10px; margin-bottom: 10px; float: right;">
         <button type="submit" class="btn btn-primary">Cari</button>
     </form>
-
-
-    <a href="{{ route('books.create')}}" class="btn btn-primary float-end" style="margin-bottom: 10px">Tambah Buku</a>
 
     <table class="table table-bordered border-black">
         <thead class="table-primary border-black">
@@ -88,6 +94,8 @@
             </tr> --}}
         </tbody>
     </table>
+
+    <a href="{{'/books'}}" class="btn btn-primary float-end" style="margin-bottom: 10px">Kembali</a>
 
     <div>
         {{$books_data->links()}}
