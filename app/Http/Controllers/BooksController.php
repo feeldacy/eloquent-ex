@@ -5,6 +5,7 @@ use App\Models\Books;
 
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Auth;
 
 class BooksController extends Controller
 {
@@ -14,11 +15,14 @@ class BooksController extends Controller
 
         $books_data = Books::all()->sortBy('id');
 
-        $countBooks = $books_data->count();
+        $count_books = $books_data->count();
 
         $totalPrice = $books_data->sum('harga');
 
-        return view('books.indeks', compact('books_data', 'countBooks', 'totalPrice'));
+        if (Auth::check()){
+            return view('books.restricted', compact('books_data', 'count_books'));
+        }
+        return view('books.general', compact('books_data', 'count_books'));
     }
 
     public function create(){
